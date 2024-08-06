@@ -51,6 +51,24 @@ app.post('/', async (req, res) => {
     }
 })
 
+// Atualizar livro
+app.put('/:id', async (req, res) => {
+    const book = await Book.findByIdAndUpdate(req.params.id, {
+        titulo: req.body.titulo,
+        autor: req.body.autor,
+        ano: req.body.ano,
+        descricao: req.body.descricao
+    }, {
+        new: true
+    })
+    res.send(book)
+})
+
+app.delete('/:id', async (req, res) => {
+    const book = await Book.findByIdAndDelete(req.params.id)
+    res.send(book)
+})
+
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`)
 })
