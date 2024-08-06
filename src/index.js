@@ -2,11 +2,13 @@ const express = require('express')
 const dotenv = require('dotenv')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
-
-const MONGODB_URI = process.env.MONGODB_URI;
 const PORT = 3000
 
 dotenv.config()
+const MONGODB_URI = process.env.MONGODB_URI;
+
+
+
 
 // Conectar ao MongoDB
 mongoose.connect(MONGODB_URI)
@@ -27,8 +29,26 @@ const Book = mongoose.model('Book', {
     descricao: String
 })
 
-app.get('/', (req, res) => {
-    res.send('Funcionando')
+// Listar livros
+app.get('/', async (req, res) => {
+    const book = await Book.find()
+    res.send(book)
+})
+
+// Adicionar livro
+app.post('/', async (req, res) => {
+    try{
+        const book = new Book({
+            titulo: req.body.titulo,
+            autor: req.body.autor,
+            ano: req.body.ano,
+            descricao: req.body.descricao
+        })
+        await book.save()
+        res.send(book)
+    }catch(err){
+        res.status(500).send({msg: 'Erro ao salvar livro ', error: err})
+    }
 })
 
 app.listen(PORT, () => {
