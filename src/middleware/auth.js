@@ -1,17 +1,29 @@
 const jwt = require('jsonwebtoken');
-const SECRET_KEY = process.env.SECRET_KEY || 'secret_key';
+const User = require('../models/User');
+const dotenv = require('dotenv')
 
-const authMiddleware = (req, res, next) => {
-  const token = req.header('Authorization').replace('Bearer ', '');
-  if (!token) {
-    return res.status(401).send('Acesso negado. Token não fornecido.');
-  }
+dotenv.config()
+
+const authMiddleware = async (req, res, next) => {
   try {
-    const decoded = jwt.verify(token, SECRET_KEY);
-    req.user = decoded;
+    console.log('Middleware de autenticação iniciado');
+    const token = req.body.token;
+    console.log('Token recebido:', token);
+    const decoded = jwt.verify(token, process.env.SECRET_KEY);
+    console.log('Token decodificado:', decoded);
+    const user = await User.findOne({ _id: decoded._id });
+    console.log('Usuário encontrado:', user);
+
+    if (!user) {
+      throw new Error();
+    }
+
+    req.token = token;
+    req.user = user;
     next();
   } catch (err) {
-    res.status(400).send('Token inválido.');
+    console.log('Erro no middleware de autenticação:', err.message);
+    res.status(401).send({ error: 'Por favor, autentique-se.' });
   }
 };
 
