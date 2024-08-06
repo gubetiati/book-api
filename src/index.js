@@ -2,73 +2,42 @@ const express = require('express')
 const dotenv = require('dotenv')
 const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
-const PORT = 3000
+const authRoutes = require('./routes/auth')
+const userRoutes = require('./routes/users')
+const bookRoutes = require('./routes/books')
+const User = require('./models/User')
 
-dotenv.config()
-const MONGODB_URI = process.env.MONGODB_URI;
+dotenv.config();
 
+const app = express();
+const PORT = process.env.PORT
+const MONGODB_URI = process.env.MONGODB_URI
+const ADMIN_EMAIL = process.env.ADMIN_EMAIL
+const ADMIN_SENHA = process.env.ADMIN_SENHA
 
-
+app.use(bodyParser.json())
 
 // Conectar ao MongoDB
 mongoose.connect(MONGODB_URI)
-    .then(() => {
+    .then(async () => {
         console.log('Conectado ao MongoDB')
+        // Criar administrador padrão
+        let admin = await User.findOne({ email: ADMIN_EMAIL })
+        if (!admin) {
+            admin = new User({ nome: 'Administrador', email: ADMIN_EMAIL, senha: ADMIN_SENHA, isAdmin: true })
+            await admin.save()
+            console.log('Administrador padrão criado.')
+        }
     }).catch((err) => {
         console.error('Erro ao conectar ao MongoDB ', err)
-    })
+    });
 
-const app = express()
-app.use(bodyParser.json())
+// Rotas
+app.use('/auth', authRoutes)
+app.use('/users', userRoutes)
+app.use('/books', bookRoutes)
 
-// Modelo
-const Book = mongoose.model('Book', {
-    titulo: String,
-    autor: String,
-    ano: Number,
-    descricao: String
-})
-
-// Listar livros
-app.get('/', async (req, res) => {
-    const book = await Book.find()
-    res.send(book)
-})
-
-// Adicionar livro
-app.post('/', async (req, res) => {
-    try{
-        const book = new Book({
-            titulo: req.body.titulo,
-            autor: req.body.autor,
-            ano: req.body.ano,
-            descricao: req.body.descricao
-        })
-        await book.save()
-        res.send(book)
-    }catch(err){
-        res.status(500).send({msg: 'Erro ao salvar livro ', error: err})
-    }
-})
-
-// Atualizar livro
-app.put('/:id', async (req, res) => {
-    const book = await Book.findByIdAndUpdate(req.params.id, {
-        titulo: req.body.titulo,
-        autor: req.body.autor,
-        ano: req.body.ano,
-        descricao: req.body.descricao
-    }, {
-        new: true
-    })
-    res.send(book)
-})
-
-app.delete('/:id', async (req, res) => {
-    const book = await Book.findByIdAndDelete(req.params.id)
-    res.send(book)
-})
-
+// Inicializar o servidor
 app.listen(PORT, () => {
     console.log(`Servidor rodando na porta ${PORT}`)
-})
+});
