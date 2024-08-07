@@ -7,7 +7,7 @@ dotenv.config()
 const authMiddleware = async (req, res, next) => {
   try {
     console.log('Middleware de autenticação iniciado');
-    const token = req.body.token;
+    const token = req.header('Authorization').replace('Bearer ', '');
     console.log('Token recebido:', token);
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
     console.log('Token decodificado:', decoded);

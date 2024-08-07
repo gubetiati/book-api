@@ -5,6 +5,12 @@ const adminMiddleware = require('../middleware/admin');
 
 const router = express.Router();
 
+// Listar usuários cadastrados
+router.get('/', async (req, res) => {
+  const users = await User.find()
+  res.send(users)
+})
+
 // Rota para criar um novo administrador
 router.post('/admin', authMiddleware, adminMiddleware, async (req, res) => {
   try {
@@ -21,7 +27,7 @@ router.post('/admin', authMiddleware, adminMiddleware, async (req, res) => {
   }
 });
 
-// Rota para excluir um usuário não administrador
+// Rota para excluir um usuário
 router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
