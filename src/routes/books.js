@@ -1,17 +1,9 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const authMiddleware = require('../middleware/auth');
 const adminMiddleware = require('../middleware/admin');
+const Book = require('../models/Book')
 
 const router = express.Router();
-
-// Modelo de Livro
-const Book = mongoose.model('Book', {
-    titulo: String,
-    autor: String,
-    ano: Number,
-    descricao: String
-});
 
 // Listar livros
 router.get('/', async (req, res) => {
@@ -31,7 +23,7 @@ router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
 });
 
 // Atualizar livro
-router.put('/:id', async (req, res) => {
+router.put('/:id',  authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const book = await Book.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.send(book);
