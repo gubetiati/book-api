@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const authMiddleware = require('../middleware/auth');
+const adminMiddleware = require('../middleware/admin');
 
 const router = express.Router();
 
@@ -18,7 +20,7 @@ router.get('/', async (req, res) => {
 });
 
 // Adicionar livro
-router.post('/', async (req, res) => {
+router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const book = new Book(req.body);
         await book.save();
@@ -39,7 +41,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Deletar livro
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
     try {
         const book = await Book.findByIdAndDelete(req.params.id);
         res.send(book);
