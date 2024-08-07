@@ -24,11 +24,6 @@ router.post('/admin', authMiddleware, adminMiddleware, async (req, res) => {
 // Rota para excluir um usuário não administrador
 router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
   try {
-    // Verificar se o usuário que está tentando excluir é um administrador
-    if (!req.user.isAdmin) {
-      return res.status(403).send('Você não tem permissão para excluir usuários.');
-    }
-
     const user = await User.findById(req.params.id);
     if (!user) {
       return res.status(404).send('Usuário não encontrado.');
@@ -39,7 +34,6 @@ router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
 
     // Excluir o usuário
     await user.deleteOne();
-
     res.send('Usuário excluído com sucesso.');
   } catch (err) {
     res.status(400).send(err.message);
