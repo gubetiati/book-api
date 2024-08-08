@@ -4,7 +4,8 @@ const book = new mongoose.Schema({
     titulo: String,
     autor: String,
     ano: Number,
-    descricao: String
+    descricao: String,
+    categorias: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Category' }]
 })
 
 const Book = mongoose.model('Book', book)

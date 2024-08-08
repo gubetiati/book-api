@@ -5,6 +5,7 @@ const bodyParser = require('body-parser');
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const bookRoutes = require('./routes/books');
+const categoryRoutes = require('./routes/categories');
 
 dotenv.config();
 
@@ -19,11 +20,11 @@ mongoose.connect(MONGODB_URI)
   .then(() => console.log('Conectado ao MongoDB'))
   .catch((err) => console.error('Erro ao conectar ao MongoDB', err));
 
-// Rotas de autenticação e usuários
+// Rotas de autenticação, usuários, livros e categorias
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/books', bookRoutes);
-
+app.use('/categories', categoryRoutes);
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });

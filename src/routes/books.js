@@ -1,7 +1,8 @@
 const express = require('express');
 const authMiddleware = require('../middleware/auth');
 const adminMiddleware = require('../middleware/admin');
-const Book = require('../models/Book')
+const Book = require('../models/Book');
+const Category = require('../models/Category');
 
 const router = express.Router();
 
@@ -17,6 +18,7 @@ router.get('/', async (req, res) => {
 
     try {
         const books = await Book.find()
+            .populate('categorias', 'nome') // Popula as categorias associadas ao livro
             .limit(limite)
             .skip((pagina - 1) * limite);
         const total = await Book.countDocuments();
@@ -35,7 +37,15 @@ router.get('/', async (req, res) => {
 // Adicionar livro
 router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
     try {
-        const book = new Book(req.body);
+        const { titulo, autor, ano, descricao, categorias } = req.body;
+
+        // Verificar se todas as categorias fornecidas existem
+        const categoriasExistentes = await Category.find({ _id: { $in: categorias } });
+        if (categoriasExistentes.length !== categorias.length) {
+            return res.status(400).send({ error: 'Uma ou mais categorias fornecidas não foram encontradas.' });
+        }
+
+        const book = new Book({ titulo, autor, ano, descricao, categorias });
         await book.save();
         res.send(book);
     } catch (err) {
@@ -44,8 +54,18 @@ router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
 });
 
 // Atualizar livro
-router.put('/:id',  authMiddleware, adminMiddleware, async (req, res) => {
+router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
     try {
+        const { categorias } = req.body;
+
+        // Verificar se todas as categorias fornecidas existem
+        if (categorias) {
+            const categoriasExistentes = await Category.find({ _id: { $in: categorias } });
+            if (categoriasExistentes.length !== categorias.length) {
+                return res.status(400).send({ error: 'Uma ou mais categorias fornecidas não foram encontradas.' });
+            }
+        }
+
         const book = await Book.findByIdAndUpdate(req.params.id, req.body, { new: true });
         res.send(book);
     } catch (err) {
