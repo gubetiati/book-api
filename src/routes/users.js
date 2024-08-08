@@ -92,8 +92,26 @@ router.post('/me/livrosLidos/:bookId', authMiddleware, async (req, res) => {
 // Listar livros lidos pelo usuário
 router.get('/me/livrosLidos', authMiddleware, async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate('livrosLidos');
-    res.send(user.livrosLidos);
+    const user = await User.findById(req.user._id)
+      .populate({
+        path: 'livrosLidos',
+        populate: {
+          path: 'categorias',
+          select: 'nome' // Popula apenas o campo "nome" das categorias
+        }
+      });
+
+    // Formata os dados para incluir apenas o nome das categorias
+    const livrosLidosComCategorias = user.livrosLidos.map(livro => ({
+      _id: livro._id,
+      titulo: livro.titulo,
+      autor: livro.autor,
+      ano: livro.ano,
+      descricao: livro.descricao,
+      categorias: livro.categorias.map(categoria => categoria.nome) // Extrai os nomes das categorias
+    }));
+
+    res.send(livrosLidosComCategorias);
   } catch (err) {
     res.status(500).send({ error: 'Erro ao listar livros lidos.', details: err.message });
   }
