@@ -2,6 +2,7 @@ const express = require('express');
 const User = require('../models/User');
 const authMiddleware = require('../middleware/auth');
 const adminMiddleware = require('../middleware/admin');
+const Book = require('../models/Book')
 
 const router = express.Router();
 
@@ -60,5 +61,43 @@ router.put('/me', authMiddleware, async (req, res) => {
     res.status(400).send(err.message);
   }
 });
+
+// Marcar livro como lido
+router.post('/me/livrosLidos/:bookId', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    const bookId = req.params.bookId;
+
+    // Verifica se o livro existe
+    const book = await Book.findById(bookId);
+    if (!book) {
+      return res.status(404).send({ error: 'Livro não encontrado.' });
+    }
+
+    // Verifica se o livro já foi marcado como lido
+    if (user.livrosLidos.includes(bookId)) {
+      return res.status(400).send({ error: 'Este livro já está marcado como lido.' });
+    }
+
+    // Adiciona o livro à lista de livros lidos
+    user.livrosLidos.push(bookId);
+    await user.save();
+
+    res.send({ message: 'Livro marcado como lido com sucesso.', livrosLidos: user.livrosLidos });
+  } catch (err) {
+    res.status(500).send({ error: 'Erro ao marcar livro como lido.', details: err.message });
+  }
+});
+
+// Listar livros lidos pelo usuário
+router.get('/me/livrosLidos', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate('livrosLidos');
+    res.send(user.livrosLidos);
+  } catch (err) {
+    res.status(500).send({ error: 'Erro ao listar livros lidos.', details: err.message });
+  }
+});
+
 
 module.exports = router;
