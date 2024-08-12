@@ -117,5 +117,31 @@ router.get('/me/livrosLidos', authMiddleware, async (req, res) => {
   }
 });
 
+router.get('/me/recommendations', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate({
+      path: 'livrosLidos',
+      populate: { path: 'categorias', select: 'nome' }
+    });
+
+    // Coletar IDs das categorias dos livros que o usuário já leu
+    const categoriasLidas = user.livrosLidos.reduce((acc, livro) => {
+      livro.categorias.forEach(categoria => acc.add(categoria._id.toString()));
+      return acc;
+    }, new Set());
+
+    // Buscar livros que pertencem às categorias que o usuário leu, mas que ele ainda não leu
+    const livrosRecomendados = await Book.find({
+      categorias: { $in: Array.from(categoriasLidas) },
+      _id: { $nin: user.livrosLidos }
+    }).populate('categorias', 'nome');
+
+    res.send(livrosRecomendados);
+  } catch (err) {
+    res.status(500).send({ error: 'Erro ao gerar recomendações.', details: err.message });
+  }
+});
+
+
 
 module.exports = router;

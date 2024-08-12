@@ -6,8 +6,11 @@ const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const bookRoutes = require('./routes/books');
 const categoryRoutes = require('./routes/categories');
+const installRoute = require('./routes/install')
 
 dotenv.config();
+
+const router = express.Router()
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -20,11 +23,15 @@ mongoose.connect(MONGODB_URI)
   .then(() => console.log('Conectado ao MongoDB'))
   .catch((err) => console.error('Erro ao conectar ao MongoDB', err));
 
+
+module.exports = router;
+
 // Rotas de autenticação, usuários, livros e categorias
 app.use('/auth', authRoutes);
 app.use('/users', userRoutes);
 app.use('/books', bookRoutes);
 app.use('/categories', categoryRoutes);
+app.use('/install', installRoute)
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });
