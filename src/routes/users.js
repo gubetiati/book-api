@@ -8,12 +8,17 @@ const router = express.Router();
 
 // Listar usuários cadastrados
 router.get('/', async (req, res) => {
+  // #swagger.tags = ['Users']
+  // #swagger.summary = 'Lista usuários cadastrados'
   const users = await User.find()
   res.send(users)
 })
 
 // Rota para criar um novo administrador
 router.post('/admin', authMiddleware, adminMiddleware, async (req, res) => {
+  // #swagger.tags = ['Users']
+  // #swagger.summary = 'Cria um novo administrador'
+  // #swagger.description = 'Somente administradores podem criar'
   try {
     const { email } = req.body;
     const user = await User.findOne({ email });
@@ -30,6 +35,9 @@ router.post('/admin', authMiddleware, adminMiddleware, async (req, res) => {
 
 // Rota para excluir um usuário
 router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
+  // #swagger.tags = ['Users']
+  // #swagger.summary = 'Deleta um usuário'
+  // #swagger.description = 'Somente administradores podem deletar'
   try {
     const user = await User.findById(req.params.id);
     if (!user) {
@@ -49,6 +57,8 @@ router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
 
 // Rota para alterar dados pessoais do usuário
 router.put('/me', authMiddleware, async (req, res) => {
+  // #swagger.tags = ['Users']
+  // #swagger.summary = 'Altera dados pessoas do usuários'
   try {
     const user = await User.findById(req.user._id);
     const { nome, email, senha } = req.body;
@@ -64,6 +74,8 @@ router.put('/me', authMiddleware, async (req, res) => {
 
 // Marcar livro como lido
 router.post('/me/livrosLidos/:bookId', authMiddleware, async (req, res) => {
+  // #swagger.tags = ['Users']
+  // #swagger.summary = 'Marca livro como lido'
   try {
     const user = await User.findById(req.user._id);
     const bookId = req.params.bookId;
@@ -91,6 +103,8 @@ router.post('/me/livrosLidos/:bookId', authMiddleware, async (req, res) => {
 
 // Listar livros lidos pelo usuário
 router.get('/me/livrosLidos', authMiddleware, async (req, res) => {
+  // #swagger.tags = ['Users']
+  // #swagger.summary = 'Lista livros lidos pelo usuário'
   try {
     const user = await User.findById(req.user._id)
       .populate({
@@ -118,6 +132,9 @@ router.get('/me/livrosLidos', authMiddleware, async (req, res) => {
 });
 
 router.get('/me/recommendations', authMiddleware, async (req, res) => {
+  // #swagger.tags = ['Users']
+  // #swagger.summary = 'Lista livros recomendados para o usuário'
+  // #swagger.description = 'É listado livros recomendados conforme o que o usuário já leu.'
   try {
     const user = await User.findById(req.user._id).populate({
       path: 'livrosLidos',
@@ -141,7 +158,5 @@ router.get('/me/recommendations', authMiddleware, async (req, res) => {
     res.status(500).send({ error: 'Erro ao gerar recomendações.', details: err.message });
   }
 });
-
-
 
 module.exports = router;

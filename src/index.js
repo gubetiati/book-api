@@ -2,6 +2,9 @@ const express = require('express');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
+const swaggerUi = require('swagger-ui-express');
+const swaggerFile = require('./swagger-output.json');
+
 const authRoutes = require('./routes/auth');
 const userRoutes = require('./routes/users');
 const bookRoutes = require('./routes/books');
@@ -32,6 +35,9 @@ app.use('/users', userRoutes);
 app.use('/books', bookRoutes);
 app.use('/categories', categoryRoutes);
 app.use('/install', installRoute)
+
+app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerFile));
+
 app.listen(PORT, () => {
   console.log(`Servidor rodando na porta ${PORT}`);
 });

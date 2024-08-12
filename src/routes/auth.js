@@ -8,8 +8,11 @@ dotenv.config();
 const router = express.Router();
 const SECRET_KEY = process.env.SECRET_KEY;
 
-// Rota de cadastro
+
 router.post('/register', async (req, res) => {
+  // Rota de cadastro
+  // #swagger.tags = ['Auth']
+  // #swagger.summary = 'Cadastra usuário'
   try {
     const { nome, email, senha } = req.body;
     const user = new User({ nome, email, senha });
@@ -20,8 +23,10 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Rota de login
 router.post('/login', async (req, res) => {
+  // Rota de login
+  // #swagger.tags = ['Auth']
+  // #swagger.summary = 'Faz Login do usuário'
   try {
     const { email, senha } = req.body;
     const user = await User.findOne({ email, senha });

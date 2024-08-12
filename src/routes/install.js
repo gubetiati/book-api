@@ -5,6 +5,8 @@ const Book = require('../models/Book');
 const router = express.Router()
 
 router.get('/', async (req, res) => {
+    // #swagger.tags = ['Install']
+    // #swagger.summary = 'Instala todas as dependências no banco de dados'
     try {
         // Verificar se já existem categorias no banco de dados
         //const categoriaExiste = await Category.findOne();

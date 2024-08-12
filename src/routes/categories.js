@@ -7,12 +7,17 @@ const router = express.Router();
 
 // Listar categorias
 router.get('/', async (req, res) => {
+  // #swagger.tags = ['Categories']
+  // #swagger.summary = 'Lista todas as categorias'
   const categories = await Category.find();
   res.send(categories);
 });
 
 // Adicionar categoria (somente administrador)
 router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
+  // #swagger.tags = ['Categories']
+  // #swagger.summary = 'Adiciona uma nova categoria'
+  // #swagger.description = 'Somente administradores podem adicionar'
   try {
     const category = new Category(req.body);
     await category.save();
@@ -24,6 +29,9 @@ router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
 
 // Atualizar categoria (somente administrador)
 router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
+  // #swagger.tags = ['Categories']
+  // #swagger.summary = 'Atualiza uma categoria'
+  // #swagger.description = 'Somente administradores podem atualizar'
   try {
     const category = await Category.findByIdAndUpdate(req.params.id, req.body, { new: true });
     res.send(category);
@@ -34,6 +42,9 @@ router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
 
 // Deletar categoria (somente administrador)
 router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
+  // #swagger.tags = ['Categories']
+  // #swagger.summary = 'Deleta uma categoria'
+  // #swagger.description = 'Somente administradores podem deletar'
   try {
     await Category.findByIdAndDelete(req.params.id);
     res.send({ msg: 'Categoria deletada com sucesso' });

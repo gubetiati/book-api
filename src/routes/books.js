@@ -8,6 +8,8 @@ const router = express.Router();
 
 // Listar livros
 router.get('/', async (req, res) => {
+    // #swagger.tags = ['Books']
+    // #swagger.summary = 'Lista todos os livros cadastrados'
     const limite = parseInt(req.query.limite) || 10; // Define o limite de registros por página
     const pagina = parseInt(req.query.pagina) || 1;  // Define a página atual
 
@@ -47,6 +49,8 @@ router.get('/', async (req, res) => {
 
 // Adicionar livro
 router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
+    // #swagger.tags = ['Books']
+    // #swagger.summary = 'Adiciona um novo livro'
     try {
         const { titulo, autor, ano, descricao, categorias } = req.body;
 
@@ -66,6 +70,8 @@ router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
 
 // Atualizar livro
 router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
+    // #swagger.tags = ['Books']
+    // #swagger.summary = 'Atualiza dados de um livro'
     try {
         const { categorias } = req.body;
 
@@ -86,6 +92,8 @@ router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
 
 // Deletar livro
 router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
+    // #swagger.tags = ['Books']
+    // #swagger.summary = 'Deleta livro'
     try {
         const book = await Book.findByIdAndDelete(req.params.id);
         res.send(book);
