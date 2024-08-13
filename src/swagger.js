@@ -6,7 +6,7 @@ const doc = {
     title: 'Book API',
     description: 'API para gerenciar livros e categorias, incluindo funcionalidades de autenticação.',
   },
-  host: 'localhost:3000', // Atualize com o host correto se estiver em produção
+  host: 'localhost:3000',
   schemes: ['http'],
   basePath: '/',
   securityDefinitions: {
@@ -29,8 +29,8 @@ const doc = {
       nome: 'Fantasia',
     },
     User: {
-      nome: 'John Doe',
-      email: 'john.doe@example.com',
+      nome: 'Gustavo Betiati',
+      email: 'gustavo@teste.com',
       senha: '123456',
       isAdmin: false,
     }
