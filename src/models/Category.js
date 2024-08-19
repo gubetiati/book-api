@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+//criação do modelo Categorias no MongoDB
 const categorySchema = new mongoose.Schema({
   nome: { type: String, required: true, unique: true },
 });

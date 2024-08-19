@@ -6,9 +6,11 @@ dotenv.config()
 
 const authMiddleware = async (req, res, next) => {
   try {
+    //recebe o token de autenticação pelo header, sendo necessário inserir: Bearer <token>
     console.log('Middleware de autenticação iniciado');
     const token = req.header('Authorization').replace('Bearer ', '');
     console.log('Token recebido:', token);
+    //decodifica o token com a chave secreta
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
     console.log('Token decodificado:', decoded);
     const user = await User.findOne({ _id: decoded._id });

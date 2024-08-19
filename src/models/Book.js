@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+//criação do modelo de livros no MongoDB
 const book = new mongoose.Schema({
     titulo: String,
     autor: String,

@@ -5,7 +5,7 @@ const adminMiddleware = require('../middleware/admin');
 
 const router = express.Router();
 
-// Listar categorias
+//rota para listar categorias
 router.get('/', async (req, res) => {
   // #swagger.tags = ['Categories']
   // #swagger.summary = 'Lista todas as categorias'
@@ -13,7 +13,7 @@ router.get('/', async (req, res) => {
   res.send(categories);
 });
 
-// Adicionar categoria (somente administrador)
+//rota para adicionar categoria (somente administrador)
 router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
   // #swagger.tags = ['Categories']
   // #swagger.summary = 'Adiciona uma nova categoria'
@@ -27,7 +27,7 @@ router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
   }
 });
 
-// Atualizar categoria (somente administrador)
+//rota para atualizar categoria (somente administrador)
 router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
   // #swagger.tags = ['Categories']
   // #swagger.summary = 'Atualiza uma categoria'
@@ -40,7 +40,7 @@ router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
   }
 });
 
-// Deletar categoria (somente administrador)
+//rota para deletar categoria (somente administrador)
 router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
   // #swagger.tags = ['Categories']
   // #swagger.summary = 'Deleta uma categoria'

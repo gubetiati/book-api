@@ -6,12 +6,12 @@ const Category = require('../models/Category');
 
 const router = express.Router();
 
-// Listar livros
+//rota para listar livros
 router.get('/', async (req, res) => {
     // #swagger.tags = ['Books']
     // #swagger.summary = 'Lista todos os livros cadastrados'
-    const limite = parseInt(req.query.limite) || 10; // Define o limite de registros por página
-    const pagina = parseInt(req.query.pagina) || 1;  // Define a página atual
+    const limite = parseInt(req.query.limite) || 10; //define o limite de registros por página
+    const pagina = parseInt(req.query.pagina) || 1;  //define a página atual
 
     // Valida se o limite é 5, 10 ou 30
     if (![5, 10, 30].includes(limite)) {
@@ -20,20 +20,20 @@ router.get('/', async (req, res) => {
 
     try {
         const books = await Book.find()
-            .populate('categorias', 'nome') // Popula as categorias associadas ao livro
+            .populate('categorias', 'nome') //popula as categorias associadas ao livro
             .limit(limite)
             .skip((pagina - 1) * limite);
 
         const total = await Book.countDocuments();
 
-        // Mapeia os nomes das categorias para cada livro
+        //mapeia os nomes das categorias para cada livro
         const booksComCategorias = books.map(book => ({
             _id: book._id,
             titulo: book.titulo,
             autor: book.autor,
             ano: book.ano,
             descricao: book.descricao,
-            categorias: book.categorias.map(categoria => categoria.nome) // Extrai apenas os nomes das categorias
+            categorias: book.categorias.map(categoria => categoria.nome) //extrai apenas os nomes das categorias
         }));
 
         res.send({
@@ -47,14 +47,14 @@ router.get('/', async (req, res) => {
     }
 });
 
-// Adicionar livro
+//rota para adicionar livro
 router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
     // #swagger.tags = ['Books']
     // #swagger.summary = 'Adiciona um novo livro'
     try {
         const { titulo, autor, ano, descricao, categorias } = req.body;
 
-        // Verificar se todas as categorias fornecidas existem
+        //verifica se todas as categorias fornecidas existem
         const categoriasExistentes = await Category.find({ _id: { $in: categorias } });
         if (categoriasExistentes.length !== categorias.length) {
             return res.status(400).send({ error: 'Uma ou mais categorias fornecidas não foram encontradas.' });
@@ -68,14 +68,14 @@ router.post('/', authMiddleware, adminMiddleware, async (req, res) => {
     }
 });
 
-// Atualizar livro
+//rota para atualizar livro
 router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
     // #swagger.tags = ['Books']
     // #swagger.summary = 'Atualiza dados de um livro'
     try {
         const { categorias } = req.body;
 
-        // Verificar se todas as categorias fornecidas existem
+        //verifica se todas as categorias fornecidas existem
         if (categorias) {
             const categoriasExistentes = await Category.find({ _id: { $in: categorias } });
             if (categoriasExistentes.length !== categorias.length) {
@@ -90,7 +90,7 @@ router.put('/:id', authMiddleware, adminMiddleware, async (req, res) => {
     }
 });
 
-// Deletar livro
+//rota para deletar livro
 router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
     // #swagger.tags = ['Books']
     // #swagger.summary = 'Deleta livro'

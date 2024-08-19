@@ -4,14 +4,11 @@ const Book = require('../models/Book');
 
 const router = express.Router()
 
+//rota para inserir dados no MongoDB
 router.get('/', async (req, res) => {
     // #swagger.tags = ['Install']
     // #swagger.summary = 'Instala todas as dependências no banco de dados'
     try {
-        // Verificar se já existem categorias no banco de dados
-        //const categoriaExiste = await Category.findOne();
-        //if (!categoriaExiste) {
-        // Inserir categorias apenas se não existirem
         const categorias = [
             { nome: 'Ficção Científica' },
             { nome: 'Fantasia' },
@@ -20,16 +17,7 @@ router.get('/', async (req, res) => {
             { nome: 'Aventura' }
         ];
         var categoriasInseridas = await Category.insertMany(categorias);
-        
-    //} else {
-        //categoriasInseridas = await Category.find(); // Recupera as categorias existentes
-       // }
 
-        // Verificar se já existem livros no banco de dados
-        //const livroExiste = await Book.findOne();
-        //if (!livroExiste) {
-
-        // Inserir livros apenas se não existirem
         const livros = [
             { titulo: 'O mágico de Oz', 
             autor: 'L. Frank Baum', ano: 2023, 

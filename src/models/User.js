@@ -1,5 +1,6 @@
 const mongoose = require('mongoose')
 
+//criação do modelo Usuário no MongoDB
 const user = new mongoose.Schema({
     nome: String,
     email: {type: String, unique: true},

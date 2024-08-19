@@ -7,6 +7,7 @@ const installRoute = require('./install');
 
 const router = express.Router();
 
+//centralização das rotas que serão importadas no index.js
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
 router.use('/books', bookRoutes);

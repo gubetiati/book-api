@@ -6,7 +6,7 @@ const Book = require('../models/Book')
 
 const router = express.Router();
 
-// Listar usuários cadastrados
+//rota para listar usuários cadastrados
 router.get('/', async (req, res) => {
   // #swagger.tags = ['Users']
   // #swagger.summary = 'Lista usuários cadastrados'
@@ -14,7 +14,7 @@ router.get('/', async (req, res) => {
   res.send(users)
 })
 
-// Rota para criar um novo administrador
+//rota para criar um novo administrador
 router.post('/admin', authMiddleware, adminMiddleware, async (req, res) => {
   // #swagger.tags = ['Users']
   // #swagger.summary = 'Cria um novo administrador'
@@ -33,7 +33,7 @@ router.post('/admin', authMiddleware, adminMiddleware, async (req, res) => {
   }
 });
 
-// Rota para excluir um usuário
+//rota para excluir um usuário
 router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
   // #swagger.tags = ['Users']
   // #swagger.summary = 'Deleta um usuário'
@@ -47,7 +47,7 @@ router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
       return res.status(400).send('Não é possível excluir um administrador.');
     }
 
-    // Excluir o usuário
+    //excluir o usuário
     await user.deleteOne();
     res.send('Usuário excluído com sucesso.');
   } catch (err) {
@@ -55,7 +55,7 @@ router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
   }
 });
 
-// Rota para alterar dados pessoais do usuário
+//rota para alterar dados pessoais do usuário
 router.put('/me', authMiddleware, async (req, res) => {
   // #swagger.tags = ['Users']
   // #swagger.summary = 'Altera dados pessoas do usuários'
@@ -72,7 +72,7 @@ router.put('/me', authMiddleware, async (req, res) => {
   }
 });
 
-// Marcar livro como lido
+//rota para marcar livro como lido
 router.post('/me/livrosLidos/:bookId', authMiddleware, async (req, res) => {
   // #swagger.tags = ['Users']
   // #swagger.summary = 'Marca livro como lido'
@@ -86,12 +86,12 @@ router.post('/me/livrosLidos/:bookId', authMiddleware, async (req, res) => {
       return res.status(404).send({ error: 'Livro não encontrado.' });
     }
 
-    // Verifica se o livro já foi marcado como lido
+    //verifica se o livro já foi marcado como lido
     if (user.livrosLidos.includes(bookId)) {
       return res.status(400).send({ error: 'Este livro já está marcado como lido.' });
     }
 
-    // Adiciona o livro à lista de livros lidos
+    //adiciona o livro à lista de livros lidos
     user.livrosLidos.push(bookId);
     await user.save();
 
@@ -101,7 +101,7 @@ router.post('/me/livrosLidos/:bookId', authMiddleware, async (req, res) => {
   }
 });
 
-// Listar livros lidos pelo usuário
+//rota para listar livros lidos pelo usuário
 router.get('/me/livrosLidos', authMiddleware, async (req, res) => {
   // #swagger.tags = ['Users']
   // #swagger.summary = 'Lista livros lidos pelo usuário'
@@ -111,11 +111,11 @@ router.get('/me/livrosLidos', authMiddleware, async (req, res) => {
         path: 'livrosLidos',
         populate: {
           path: 'categorias',
-          select: 'nome' // Popula apenas o campo "nome" das categorias
+          select: 'nome' //popula apenas o campo "nome" das categorias
         }
       });
 
-    // Formata os dados para incluir apenas o nome das categorias
+    //formata os dados para incluir apenas o nome das categorias
     const livrosLidosComCategorias = user.livrosLidos.map(livro => ({
       _id: livro._id,
       titulo: livro.titulo,
@@ -141,13 +141,13 @@ router.get('/me/recommendations', authMiddleware, async (req, res) => {
       populate: { path: 'categorias', select: 'nome' }
     });
 
-    // Coletar IDs das categorias dos livros que o usuário já leu
+    //coletar IDs das categorias dos livros que o usuário já leu
     const categoriasLidas = user.livrosLidos.reduce((acc, livro) => {
       livro.categorias.forEach(categoria => acc.add(categoria._id.toString()));
       return acc;
     }, new Set());
 
-    // Buscar livros que pertencem às categorias que o usuário leu, mas que ele ainda não leu
+    //buscar livros que pertencem às categorias que o usuário leu, mas que ele ainda não leu
     const livrosRecomendados = await Book.find({
       categorias: { $in: Array.from(categoriasLidas) },
       _id: { $nin: user.livrosLidos }

@@ -10,7 +10,7 @@ const SECRET_KEY = process.env.SECRET_KEY;
 
 
 router.post('/register', async (req, res) => {
-  // Rota de cadastro
+  //rota de cadastro
   // #swagger.tags = ['Auth']
   // #swagger.summary = 'Cadastra usuário'
   try {
@@ -24,7 +24,7 @@ router.post('/register', async (req, res) => {
 });
 
 router.post('/login', async (req, res) => {
-  // Rota de login
+  //rota de login
   // #swagger.tags = ['Auth']
   // #swagger.summary = 'Faz Login do usuário'
   try {
