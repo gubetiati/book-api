@@ -102,4 +102,28 @@ router.delete('/:id', authMiddleware, adminMiddleware, async (req, res) => {
     }
 });
 
+
+router.get('/busca', async (req, res) => {
+    
+    try{
+        const {categorias} = req.query
+
+        if(!categorias){
+            return res.status(400).send({error: 'Categorias não fornecidas'})
+        }
+
+        const categoriaEncontrada = await Category.findOne({nome: categorias})
+        const livros = await Book.find({categorias: categoriaEncontrada._id})
+        .populate('categorias', 'nome')
+
+        if(livros.length === 0) {
+            return res.status(404).send({message: 'Nenhum livro encontrado'})
+        }
+        res.send(livros)
+
+    } catch(err){
+        res.status(500).send({error: 'Erro ao buscar livros ' + err.message})
+    }
+})
+
 module.exports = router;

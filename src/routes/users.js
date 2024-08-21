@@ -154,6 +154,7 @@ router.get('/me/recommendations', authMiddleware, async (req, res) => {
     }).populate('categorias', 'nome');
 
     res.send(livrosRecomendados);
+    console.log('_id do usuario: ' + req.user._id)
   } catch (err) {
     res.status(500).send({ error: 'Erro ao gerar recomendações.', details: err.message });
   }
